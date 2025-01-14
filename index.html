@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webtool</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Welkom bij de Webtool</h1>
+    <p>Hier kun je activiteitenramingen bekijken en beoordelen.</p>
+    
+    <!-- Knoppen voor feedback -->
+    <button id="agreeBtn">Eens</button>
+    <button id="disagreeBtn">Oneens</button>
+    
+    <!-- Tekstvak voor reden -->
+    <textarea id="feedback" placeholder="Waarom ben je het oneens?"></textarea>
+
+    <!-- Script toevoegen -->
+    <script src="script.js"></script>
+<h2>Upload je Excel-bestanden</h2>
+<form id="uploadForm" enctype="multipart/form-data">
+    <input type="file" id="excelFile" name="file" accept=".xls,.xlsx" multiple>
+    <button type="submit">Upload</button>
+</form>
+
+<div id="activities">
+    <!-- Hier worden activiteiten en ramingen getoond -->
+</div>
+
+</body>
+</html>
