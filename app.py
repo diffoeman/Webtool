@@ -35,8 +35,7 @@ def upload_files():
     return jsonify({'activities': all_data})  # Stuur de data terug naar de frontend
 
 if __name__ == '__main__':
-import os
-
-port = int(os.environ.get('PORT', 5000))  # Gebruik de poort van Render, standaard 5000
-app.run(host='0.0.0.0', port=port, debug=True)
+    import os
+    port = int(os.environ.get('PORT', 5000))  # Gebruik de poort van Render, standaard 5000
+    app.run(host='0.0.0.0', port=port, debug=True)
 
