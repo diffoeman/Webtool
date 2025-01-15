@@ -73,13 +73,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Knopfunctionaliteit
-    function agree(index) {
-        alert(`Je bent het eens met activiteit ${index + 1}.`);
-    }
+// Knopfunctionaliteit
+function agree(index) {
+    alert(`Je bent het eens met activiteit ${index + 1}.`);
+}
 
-    function disagree(index) {
-        const feedback = document.getElementById(`feedback-${index}`).value;
-        alert(`Feedback voor activiteit ${index + 1}: ${feedback}`);
-    }
+function disagree(index) {
+    const feedback = document.getElementById(`feedback-${index}`).value;
+    alert(`Feedback voor activiteit ${index + 1}: ${feedback}`);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Rest van de code blijft hetzelfde...
 });
+
