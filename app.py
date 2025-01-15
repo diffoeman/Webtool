@@ -1,8 +1,10 @@
 import os
 import pandas as pd
 from flask import Flask, request, jsonify
+from flask_cors import CORS  # Voeg deze import toe
 
 app = Flask(__name__)
+CORS(app)  # Schakel CORS in
 app.config['UPLOAD_FOLDER'] = 'uploads'
 
 # Zorg dat de upload-map bestaat
@@ -35,7 +37,5 @@ def upload_files():
     return jsonify({'activities': all_data})  # Stuur de data terug naar de frontend
 
 if __name__ == '__main__':
-    import os
     port = int(os.environ.get('PORT', 5000))  # Gebruik de poort van Render, standaard 5000
     app.run(host='0.0.0.0', port=port, debug=True)
-
