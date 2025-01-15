@@ -65,25 +65,25 @@ document.addEventListener('DOMContentLoaded', () => {
             div.innerHTML = `
                 <p><strong>Activiteit:</strong> ${activity.name}</p>
                 <p><strong>Raming:</strong> ${activity.estimate}</p>
-                <button onclick="agree(${index})">Eens</button>
-                <button onclick="disagree(${index})">Oneens</button>
+                <button id="agree-${index}">Eens</button>
+                <button id="disagree-${index}">Oneens</button>
                 <textarea id="feedback-${index}" placeholder="Waarom ben je het oneens?"></textarea>
             `;
             activitiesDiv.appendChild(div);
+
+            // Voeg event listeners toe aan de nieuwe knoppen
+            document.getElementById(`agree-${index}`).addEventListener('click', () => {
+                alert(`Je bent het eens met activiteit ${index + 1}.`);
+            });
+
+            document.getElementById(`disagree-${index}`).addEventListener('click', () => {
+                const feedback = document.getElementById(`feedback-${index}`).value;
+                if (feedback.trim() === '') {
+                    alert('Vul alsjeblieft een reden in waarom je het oneens bent.');
+                } else {
+                    alert(`Feedback voor activiteit ${index + 1}: ${feedback}`);
+                }
+            });
         });
     }
-
-// Knopfunctionaliteit
-function agree(index) {
-    alert(`Je bent het eens met activiteit ${index + 1}.`);
-}
-
-function disagree(index) {
-    const feedback = document.getElementById(`feedback-${index}`).value;
-    alert(`Feedback voor activiteit ${index + 1}: ${feedback}`);
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    // Rest van de code blijft hetzelfde...
 });
-
