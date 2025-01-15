@@ -23,9 +23,9 @@ const activitiesDiv = document.getElementById('activities');
 
 // Formulierverzending
 uploadForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const fileInput = document.getElementById('excelFile');
-    const files = fileInput.files;
+    e.preventDefault(); // Voorkom standaardformulierverslag
+    const fileInput = document.getElementById('excelFile'); // Selecteer bestand invoer
+    const files = fileInput.files; // Alle geselecteerde bestanden
 
     if (files.length === 0) {
         alert('Selecteer minimaal één bestand.');
@@ -34,23 +34,23 @@ uploadForm.addEventListener('submit', async (e) => {
 
     const formData = new FormData();
     for (const file of files) {
-        formData.append('files', file);
+        formData.append('files', file); // Voeg elk bestand toe aan FormData
     }
 
-    // Stuur bestanden naar de backend
-const response = await fetch('https://webtool-backend.onrender.com/upload', {
-    method: 'POST',
-    body: formData,
-});
-
+    // Verzend de bestanden naar de backend
+    const response = await fetch('https://webtool-backend.onrender.com/upload', {
+        method: 'POST',
+        body: formData,
+    });
 
     if (response.ok) {
         const data = await response.json();
-        displayActivities(data.activities);
+        displayActivities(data.activities); // Toon activiteiten
     } else {
         alert('Upload mislukt. Probeer opnieuw.');
     }
 });
+
 
 // Activiteiten weergeven
 function displayActivities(activities) {
