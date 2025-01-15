@@ -24,20 +24,27 @@ def upload_files():
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
         file.save(file_path)
 
-        # Lees de Excel-bestanden
         try:
+            # Lees de Excel-bestanden
             df = pd.read_excel(file_path)
 
             # Debug: Controleer of de kolomnamen overeenkomen
-            print("Kolommen in Excel:", df.columns)
+            print("Kolommen in Excel:", df.columns.tolist())
 
+            # Controleer of de vereiste kolommen bestaan
+            if 'Activiteit' not in df.columns or 'Raming' not in df.columns:
+                print("Vereiste kolommen niet gevonden in het bestand.")
+                return jsonify({'error': 'Vereiste kolommen niet gevonden in het bestand.'}), 400
+
+            # Itereer door de rijen en voeg de gegevens toe
             for _, row in df.iterrows():
                 all_data.append({
-                    'name': row['Activiteit'] if 'Activiteit' in df.columns else 'Onbekend',
-                    'estimate': row['Raming'] if 'Raming' in df.columns else 'Geen raming'
+                    'name': row['Activiteit'],
+                    'estimate': row['Raming']
                 })
         except Exception as e:
             print("Fout bij het verwerken van het bestand:", e)
+            return jsonify({'error': str(e)}), 500
 
     return jsonify({'activities': all_data})
 
