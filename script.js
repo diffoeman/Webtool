@@ -86,4 +86,4 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
-});
+}); // Sluit de DOMContentLoaded-luisteraar correct af
