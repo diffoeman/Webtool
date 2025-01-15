@@ -51,3 +51,19 @@ function displayActivities(activities) {
         activitiesDiv.appendChild(div);
     });
 }
+
+// Functie voor "Eens" knop
+function agree(index) {
+    alert(`Je bent het eens met activiteit ${index + 1}.`);
+}
+
+// Functie voor "Oneens" knop
+function disagree(index) {
+    const feedback = document.getElementById(`feedback-${index}`).value;
+    if (feedback.trim() === '') {
+        alert('Vul alsjeblieft een reden in waarom je het oneens bent.');
+    } else {
+        alert(`Bedankt voor je feedback: "${feedback}"`);
+        document.getElementById(`feedback-${index}`).value = ''; // Maak het tekstvak leeg
+    }
+}
