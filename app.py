@@ -26,13 +26,18 @@ def upload_files():
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
         file.save(file_path)  # Sla het bestand lokaal op
 
-        # Lees de Excel-bestanden
-        df = pd.read_excel(file_path)
-        for _, row in df.iterrows():
-            all_data.append({
-                'name': row.get('Activiteit', 'Onbekend'),
-                'estimate': row.get('Raming', 'Geen raming'),
-            })
+# Lees de Excel-bestanden
+df = pd.read_excel(file_path)
+
+# Debug: print de kolomnamen
+print("Kolommen in Excel:", df.columns)
+
+for _, row in df.iterrows():
+    all_data.append({
+        'name': row.get('Activiteit', 'Onbekend'),  # Controleer de kolomnaam
+        'estimate': row.get('Raming', 'Geen raming')  # Controleer de kolomnaam
+    })
+
 
     return jsonify({'activities': all_data})  # Stuur de data terug naar de frontend
 
