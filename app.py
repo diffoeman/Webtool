@@ -1,52 +1,73 @@
 import os
-import pandas as pd
+import bcrypt
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)  # Zorg dat CORS correct is ingesteld
-app.config['UPLOAD_FOLDER'] = 'uploads'
+CORS(app)  # Schakel CORS in voor frontend communicatie
 
-# Zorg dat de uploadmap bestaat
-if not os.path.exists(app.config['UPLOAD_FOLDER']):
-    os.makedirs(app.config['UPLOAD_FOLDER'])
+users = {}  # Simpele opslag voor gebruikers (naam als sleutel, wachtwoordhash als waarde)
+feedback_data = []  # Lijst om feedback op te slaan
 
 @app.route('/')
 def home():
     return "Backend werkt!"
 
-@app.route('/upload', methods=['POST'])
-def upload_files():
-    files = request.files.getlist('files')
-    all_data = []
+# Registreren
+@app.route('/register', methods=['POST'])
+def register():
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
 
-    for file in files:
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-        file.save(file_path)
+    if not username or not password:
+        return jsonify({'error': 'Naam en wachtwoord zijn verplicht.'}), 400
 
-        try:
-            # Lees de Excel-bestanden
-            df = pd.read_excel(file_path)
+    if username in users:
+        return jsonify({'error': 'Gebruiker bestaat al.'}), 400
 
-            # Debug: Controleer of de kolomnamen overeenkomen
-            print("Kolommen in Excel:", df.columns.tolist())
+    hashed_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    users[username] = hashed_pw
+    return jsonify({'message': 'Registratie succesvol!'}), 200
 
-            # Controleer of de vereiste kolommen bestaan
-            if 'Activiteit' not in df.columns or 'Raming' not in df.columns:
-                print("Vereiste kolommen niet gevonden in het bestand.")
-                return jsonify({'error': 'Vereiste kolommen niet gevonden in het bestand.'}), 400
+# Inloggen
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
 
-            # Itereer door de rijen en voeg de gegevens toe
-            for _, row in df.iterrows():
-                all_data.append({
-                    'name': row['Activiteit'],
-                    'estimate': row['Raming']
-                })
-        except Exception as e:
-            print("Fout bij het verwerken van het bestand:", e)
-            return jsonify({'error': str(e)}), 500
+    if username not in users:
+        return jsonify({'error': 'Gebruiker niet gevonden.'}), 404
 
-    return jsonify({'activities': all_data})
+    hashed_pw = users[username]
+    if bcrypt.checkpw(password.encode('utf-8'), hashed_pw):
+        return jsonify({'message': 'Inloggen succesvol!'}), 200
+    else:
+        return jsonify({'error': 'Onjuist wachtwoord.'}), 401
+
+# Feedback versturen
+@app.route('/submit-feedback', methods=['POST'])
+def submit_feedback():
+    data = request.json
+    username = data.get('username')
+    feedback = data.get('feedback')
+    activity = data.get('activity')
+
+    if not username or not feedback or not activity:
+        return jsonify({'error': 'Alle velden zijn verplicht!'}), 400
+
+    feedback_data.append({
+        'username': username,
+        'feedback': feedback,
+        'activity': activity
+    })
+    return jsonify({'message': 'Feedback opgeslagen!'}), 200
+
+# Feedback ophalen
+@app.route('/get-feedback', methods=['GET'])
+def get_feedback():
+    return jsonify(feedback_data), 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

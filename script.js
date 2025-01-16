@@ -1,69 +1,84 @@
-// Selecteer elementen
-const uploadForm = document.getElementById('uploadForm');
-const activitiesDiv = document.getElementById('activities');
+document.addEventListener('DOMContentLoaded', function() {
+    const username = localStorage.getItem('username');
 
-// Formulierverzending
-uploadForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const fileInput = document.getElementById('excelFile');
-    const files = fileInput.files;
-
-    if (files.length === 0) {
-        alert('Selecteer minimaal één bestand.');
-        return;
-    }
-
-    const formData = new FormData();
-    for (const file of files) {
-        formData.append('files', file);
-    }
-
-    try {
-        const response = await fetch('https://webtool-backend.onrender.com/upload', {
-            method: 'POST',
-            body: formData,
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            displayActivities(data.activities);
-        } else {
-            alert('Upload mislukt. Controleer de backend.');
-        }
-    } catch (error) {
-        console.error('Fout bij het verzenden:', error);
-        alert('Kon geen verbinding maken met de backend.');
+    if (!username && window.location.pathname.includes('index.html')) {
+        alert('Je bent niet ingelogd. Je wordt doorgestuurd naar de inlogpagina.');
+        window.location.href = 'login.html';
+    } else if (username) {
+        const welcomeMessage = document.createElement('h2');
+        welcomeMessage.textContent = `Welkom, ${username}!`;
+        document.body.prepend(welcomeMessage);
     }
 });
 
-// Activiteiten weergeven
-function displayActivities(activities) {
-    activitiesDiv.innerHTML = ''; // Maak het leeg
-    activities.forEach((activity, index) => {
-        const div = document.createElement('div');
-        div.innerHTML = `
-            <p><strong>Activiteit:</strong> ${activity.name}</p>
-            <p><strong>Raming:</strong> ${activity.estimate}</p>
-            <button onclick="agree(${index})">Eens</button>
-            <button onclick="disagree(${index})">Oneens</button>
-            <textarea id="feedback-${index}" placeholder="Waarom ben je het oneens?"></textarea>
-        `;
-        activitiesDiv.appendChild(div);
+// Registratie formulier
+if (window.location.pathname.includes('register.html')) {
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+
+        const response = await fetch('http://127.0.0.1:5000/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password }),
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            alert('Registratie succesvol! Je kunt nu inloggen.');
+            window.location.href = 'login.html';
+        } else {
+            alert(result.error || 'Er is iets misgegaan.');
+        }
     });
 }
 
-// Functie voor "Eens" knop
-function agree(index) {
-    alert(`Je bent het eens met activiteit ${index + 1}.`);
+// Login formulier
+if (window.location.pathname.includes('login.html')) {
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+
+        const response = await fetch('http://127.0.0.1:5000/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password }),
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            localStorage.setItem('username', username); // Sla de naam op
+            alert('Inloggen succesvol!');
+            window.location.href = 'index.html';
+        } else {
+            alert(result.error || 'Inloggen mislukt.');
+        }
+    });
 }
 
-// Functie voor "Oneens" knop
-function disagree(index) {
+// Feedback versturen
+async function disagree(index) {
+    const username = localStorage.getItem('username');
     const feedback = document.getElementById(`feedback-${index}`).value;
-    if (feedback.trim() === '') {
-        alert('Vul alsjeblieft een reden in waarom je het oneens bent.');
+    const activityName = document.querySelectorAll('.activity-name')[index].textContent;
+
+    if (!feedback.trim()) {
+        alert('Vul alsjeblieft je feedback in.');
+        return;
+    }
+
+    const response = await fetch('http://127.0.0.1:5000/submit-feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, feedback, activity: activityName }),
+    });
+
+    if (response.ok) {
+        alert(`Bedankt, ${username}, voor je feedback!`);
+        document.getElementById(`feedback-${index}`).value = ''; // Leeg het tekstvak
     } else {
-        alert(`Bedankt voor je feedback: "${feedback}"`);
-        document.getElementById(`feedback-${index}`).value = ''; // Maak het tekstvak leeg
+        alert('Feedback verzenden mislukt.');
     }
 }

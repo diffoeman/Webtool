@@ -7,7 +7,32 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Welkom bij de Webtool</h1>
+<button id="logoutButton">Uitloggen</button>
+<script>
+    document.getElementById('logoutButton').addEventListener('click', function() {
+        localStorage.removeItem('username'); // Verwijder de opgeslagen naam
+        alert('Je bent uitgelogd. Je wordt doorgestuurd naar de inlogpagina.');
+        window.location.href = 'login.html'; // Stuur de gebruiker naar de loginpagina
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const username = localStorage.getItem('username'); // Haal de naam op
+        if (!username) {
+            // Als de gebruiker niet is ingelogd, stuur ze naar de loginpagina
+            alert('Je bent niet ingelogd. Je wordt doorgestuurd naar de inlogpagina.');
+            window.location.href = 'login.html';
+        } else {
+            // Laat een welkomstbericht zien als de gebruiker is ingelogd
+            const welcomeMessage = document.createElement('h2');
+            welcomeMessage.textContent = `Welkom, ${username}!`;
+            document.body.prepend(welcomeMessage);
+        }
+    });
+</script>
+    
+<h1>Welkom bij de Webtool</h1>
     <p>Hier kun je activiteitenramingen bekijken en beoordelen.</p>
 
     <!-- Knoppen voor feedback -->

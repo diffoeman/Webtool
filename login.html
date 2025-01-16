@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        form {
+            display: inline-block;
+            text-align: left;
+        }
+        label, input {
+            display: block;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<label for="password">Wachtwoord:</label>
+<input type="password" id="password" placeholder="Voer je wachtwoord in" required>
+    <h1>Inloggen</h1>
+    <form id="loginForm">
+        <label for="username">Naam:</label>
+        <input type="text" id="username" placeholder="Voer je naam in" required>
+        <button type="submit">Inloggen</button>
+    </form>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Voorkom standaard gedrag
+            const username = document.getElementById('username').value.trim();
+            if (username) {
+                localStorage.setItem('username', username); // Naam opslaan
+                window.location.href = 'index.html'; // Verwijst naar de hoofdtool
+            } else {
+                alert('Vul je naam in om verder te gaan.');
+            }
+        });
+    </script>
+</body>
+</html>
